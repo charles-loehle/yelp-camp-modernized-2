@@ -2,9 +2,9 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const Campground = require('./models/campground');
-const Comment = require('./models/comment');
-const seedDB = require('./seeds');
+//const Campground = require('./models/campground');
+// const Comment = require('./models/comment');
+//const seedDB = require('./seeds');
 
 require('dotenv').config();
 
@@ -21,15 +21,23 @@ const connectDB = async () => {
 
 connectDB();
 
-// app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.urlencoded({ extended: true })); // instead of bodyParser
-app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
-// seedDB();
+app.set('view engine', 'ejs');
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+// app.use(express.urlencoded({ extended: true })); // instead of bodyParser
+// app.use(express.json()); // instead of bodyParser
+//seedDB();
 
+const campgroundRoutes = require('./routes/campgroundRoutes');
+const commentRoutes = require('./routes/commentRoutes');
+
+// mount routers
 app.get('/', function (req, res) {
   res.render('landing');
 });
+app.use('/campgrounds', campgroundRoutes);
+app.use('/campgrounds/:id/comments', commentRoutes);
 
 // ===========================
 // CAMPGROUNDS ROUTES
@@ -46,18 +54,18 @@ app.get('/', function (req, res) {
 //   });
 // });
 
-// @desc      Show all campgrounds page
-// @route     GET /campgrounds
-// @access    Public
-app.get('/campgrounds', async (req, res) => {
-  try {
-    const allCampgrounds = await Campground.find();
-    res.render('index', { campgrounds: allCampgrounds });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
+// // @desc      Show all campgrounds page
+// // @route     GET /campgrounds
+// // @access    Public
+// app.get('/campgrounds', async (req, res) => {
+//   try {
+//     const allCampgrounds = await Campground.find();
+//     res.render('index', { campgrounds: allCampgrounds });
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server error');
+//   }
+// });
 
 // //CREATE - add new campground to DB
 // app.post('/campgrounds', function (req, res) {
@@ -77,26 +85,26 @@ app.get('/campgrounds', async (req, res) => {
 //   });
 // });
 
-// @desc      Create new campground
-// @route     POST /campgrounds
-// @access    Private
-app.post('/campgrounds', async (req, res) => {
-  const { name, image, description } = req.body;
+// // @desc      Create new campground
+// // @route     POST /campgrounds
+// // @access    Private
+// app.post('/campgrounds', async (req, res) => {
+//   const { name, image, description } = req.body;
 
-  try {
-    await Campground.create({ name, image, description });
-    res.redirect('/campgrounds');
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
+//   try {
+//     await Campground.create({ name, image, description });
+//     res.redirect('/campgrounds');
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server error');
+//   }
+// });
 
-//NEW - show form to create new campground
-// @desc      Show the create new campground page
-// @route     GET /campgrounds/new
-// @access    Public
-app.get('/campgrounds/new', (req, res) => res.render('campgrounds/new'));
+// //NEW - show form to create new campground
+// // @desc      Show the create new campground page
+// // @route     GET /campgrounds/new
+// // @access    Public
+// app.get('/campgrounds/new', (req, res) => res.render('campgrounds/new'));
 
 // // SHOW - shows more info about one campground
 // app.get('/campgrounds/:id', function (req, res) {
@@ -116,26 +124,26 @@ app.get('/campgrounds/new', (req, res) => res.render('campgrounds/new'));
 //     });
 // });
 
-// @desc      Get a single campground
-// @route     GET /campgrounds/:id
-// @access    Public
-app.get('/campgrounds/:id', async (req, res) => {
-  try {
-    const campground = await Campground.findById(req.params.id).populate(
-      'comments'
-    );
-    //console.log('req.params.id: ' + req.params.id);
+// // @desc      Get a single campground
+// // @route     GET /campgrounds/:id
+// // @access    Public
+// app.get('/campgrounds/:id', async (req, res) => {
+//   try {
+//     const campground = await Campground.findById(req.params.id).populate(
+//       'comments'
+//     );
+//     //console.log('req.params.id: ' + req.params.id);
 
-    if (!campground)
-      return res.status(404).json({ msg: 'Campground not found' });
+//     if (!campground)
+//       return res.status(404).json({ msg: 'Campground not found' });
 
-    //console.log(campground);
-    res.render('campgrounds/show', { campground });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
+//     //console.log(campground);
+//     res.render('campgrounds/show', { campground });
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server error');
+//   }
+// });
 
 // ===========================
 // COMMENTS ROUTES
@@ -154,49 +162,52 @@ app.get('/campgrounds/:id', async (req, res) => {
 // @desc      Show the create new comment page
 // @route     GET /campgrounds/:id/comments/new
 // @access    Public
-app.get('/campgrounds/:id/comments/new', async (req, res) => {
-  try {
-    const campground = await Campground.findById(req.params.id);
+// app.get('/campgrounds/:id/comments/new', async (req, res) => {
+//   try {
+//     const campground = await Campground.findById(req.params.id);
 
-    if (!campground) {
-      return res.status(404).json({ msg: 'Campground not found' });
-    }
-    res.render('comments/new', { campground: campground });
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
-});
+//     if (!campground) {
+//       return res.status(404).json({ msg: 'Campground not found' });
+//     }
+//     res.render('comments/new', { campground: campground });
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server error');
+//   }
+// });
 
-app.post('/campgrounds/:id/comments', async (req, res) => {
-  try {
-    const campground = await Campground.findById(req.params.id);
-    const comment = await Comment.create(req.body.comment);
-    campground.comments.push(comment);
-    campground.save();
-    res.redirect(`/campgrounds/${campground._id}`);
-  } catch (err) {
-    console.error(err.message);
-    res.redirect('/campgrounds');
-  }
-  // Campground.findById(req.params.id, (err, campground) => {
-  //   if (err) {
-  //     console.log(err);
-  //     res.redirect('/campgrounds');
-  //   } else {
-  //     Comment.create(req.body.comment, (err, comment) => {
-  //       if (err) {
-  //         console.log(err);
-  //       } else {
-  //         campground.comments.push(comment);
-  //         campground.save();
-  //         //console.log(`/campgrounds/${campground._id}`);
-  //         res.redirect(`/campgrounds/${campground._id}`);
-  //       }
-  //     });
-  //   }
-  // });
-});
+// @desc      Create new comment
+// @route     POST /campgrounds/:id/comments/new
+// @access    Public
+// app.post('/campgrounds/:id/comments', async (req, res) => {
+//   try {
+//     const campground = await Campground.findById(req.params.id);
+//     const comment = await Comment.create(req.body.comment);
+//     campground.comments.push(comment);
+//     campground.save();
+//     res.redirect(`/campgrounds/${campground._id}`);
+//   } catch (err) {
+//     console.error(err.message);
+//     res.redirect('/campgrounds');
+//   }
+// Campground.findById(req.params.id, (err, campground) => {
+//   if (err) {
+//     console.log(err);
+//     res.redirect('/campgrounds');
+//   } else {
+//     Comment.create(req.body.comment, (err, comment) => {
+//       if (err) {
+//         console.log(err);
+//       } else {
+//         campground.comments.push(comment);
+//         campground.save();
+//         //console.log(`/campgrounds/${campground._id}`);
+//         res.redirect(`/campgrounds/${campground._id}`);
+//       }
+//     });
+//   }
+// });
+// });
 
 const PORT = process.env.PORT || 5000;
 
