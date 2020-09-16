@@ -25,9 +25,17 @@ exports.showCreateComment = async (req, res) => {
 exports.createComment = async (req, res) => {
   try {
     const campground = await Campground.findById(req.params.id);
+
     const comment = await Comment.create(req.body.comment);
+    // set author.id and author.username properties of the Comment model to data from the form
+    comment.author.id = req.user._id;
+    comment.author.username = req.user.username;
+    comment.save();
+
+    // push the comments onto the Campground model's comments array
     campground.comments.push(comment);
     campground.save();
+    console.log(comment);
     res.redirect(`/campgrounds/${campground._id}`);
   } catch (err) {
     console.error(err.message);

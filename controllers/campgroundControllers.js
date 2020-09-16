@@ -29,9 +29,19 @@ exports.showCreateCampground = (req, res) => {
 // @access    Private
 exports.createCampground = async (req, res) => {
   const { name, image, description } = req.body;
+  const author = {
+    id: req.user._id,
+    username: req.user.username,
+  };
 
   try {
-    await Campground.create({ name, image, description });
+    const newlyCreated = await Campground.create({
+      name,
+      image,
+      description,
+      author,
+    });
+    console.log(newlyCreated);
     res.redirect('/campgrounds');
   } catch (err) {
     console.error(err.message);

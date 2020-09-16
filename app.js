@@ -6,7 +6,7 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const User = require('./models/user');
-//const seedDB = require('./seeds');
+// const seedDB = require('./seeds');
 
 require('dotenv').config();
 
@@ -36,6 +36,7 @@ app.use(express.urlencoded({ extended: true })); // needed to get form data
 app.use(express.json()); // needed to get params from url
 app.use(passport.initialize());
 app.use(passport.session());
+// seedDB();
 
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
@@ -45,11 +46,6 @@ passport.deserializeUser(User.deserializeUser());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
-
-// Routers
-app.get('/', function (req, res) {
-  res.render('landing');
-});
 
 const authRoutes = require('./routes/authRoutes');
 const campgroundRoutes = require('./routes/campgroundRoutes');
@@ -61,6 +57,10 @@ app.use(function (req, res, next) {
   next();
 });
 
+// Routers
+app.get('/', function (req, res) {
+  res.render('landing');
+});
 app.use('/auth', authRoutes);
 app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/comments', commentRoutes);
