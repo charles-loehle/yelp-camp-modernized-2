@@ -4,9 +4,13 @@ const Campground = require('../models/Campground');
 // @route     GET /campgrounds
 // @access    Public
 exports.getCampgrounds = async (req, res) => {
+  console.log(req.user);
   try {
     const allCampgrounds = await Campground.find();
-    res.render('index', { campgrounds: allCampgrounds });
+    res.render('campgrounds/index', {
+      campgrounds: allCampgrounds,
+      currentUser: req.user,
+    });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
@@ -43,12 +47,10 @@ exports.getCampground = async (req, res) => {
     const campground = await Campground.findById(req.params.id).populate(
       'comments'
     );
-    console.log('req.params.id: ' + req.params.id);
 
     if (!campground)
       return res.status(404).json({ msg: 'Campground not found' });
 
-    console.log(campground);
     res.render('campgrounds/show', { campground });
   } catch (err) {
     console.error(err.message);
