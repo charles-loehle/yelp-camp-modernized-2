@@ -4,11 +4,11 @@ const Campground = require('../models/Campground');
 // @route     GET /campgrounds
 // @access    Public
 exports.getCampgrounds = async (req, res) => {
-  console.log(req.user);
+  // console.log(req.user);
   try {
-    const allCampgrounds = await Campground.find();
+    const campgrounds = await Campground.find();
     res.render('campgrounds/index', {
-      campgrounds: allCampgrounds,
+      campgrounds,
       currentUser: req.user,
     });
   } catch (err) {
@@ -19,7 +19,7 @@ exports.getCampgrounds = async (req, res) => {
 
 // @desc      Show the create new campground page
 // @route     GET /campgrounds/new
-// @access    Public
+// @access    Private
 exports.showCreateCampground = (req, res) => {
   res.render('campgrounds/new');
 };
@@ -35,13 +35,14 @@ exports.createCampground = async (req, res) => {
   };
 
   try {
-    const newlyCreated = await Campground.create({
+    //const newlyCreated =
+    await Campground.create({
       name,
       image,
       description,
       author,
     });
-    console.log(newlyCreated);
+    // console.log(newlyCreated);
     res.redirect('/campgrounds');
   } catch (err) {
     console.error(err.message);
@@ -66,4 +67,21 @@ exports.getCampground = async (req, res) => {
     console.error(err.message);
     res.status(500).send('Server error');
   }
+};
+
+// @desc     Show the edit page
+// @route     GET /campgrounds/:id/edit
+// @access    Private
+exports.editCampground = async (req, res) => {
+  try {
+    const campground = await Campground.findById(req.params.id);
+    res.render('campgrounds/edit', { campground });
+  } catch (err) {}
+};
+
+// @desc      Update single campground
+// @route     PUT /campgrounds/:id
+// @access    Private
+exports.updateCampground = async (req, res) => {
+  res.send('updateCampground');
 };

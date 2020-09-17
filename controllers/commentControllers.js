@@ -12,7 +12,8 @@ exports.showCreateComment = async (req, res) => {
     if (!campground) {
       return res.status(404).json({ msg: 'Campground not found' });
     }
-    res.render('comments/new', { campground: campground });
+    // res.render('comments/new', { campground: campground });
+    res.render('comments/new', { campground });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
