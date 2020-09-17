@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const methodOverride = require('method-override');
 const User = require('./models/user');
 // const seedDB = require('./seeds');
 
@@ -36,6 +37,7 @@ app.use(express.urlencoded({ extended: true })); // needed to get form data
 app.use(express.json()); // needed to get params from url
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(methodOverride('_method'));
 // seedDB();
 
 passport.use(new LocalStrategy(User.authenticate()));

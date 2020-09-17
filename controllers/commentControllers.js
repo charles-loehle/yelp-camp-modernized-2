@@ -43,3 +43,30 @@ exports.createComment = async (req, res) => {
     res.redirect('/campgrounds');
   }
 };
+
+// @desc      Show the edit comment page
+// @route     GET /campgrounds/:id/comments/:comment_id/edit
+// @access    Private
+exports.showEditComment = async (req, res) => {
+  try {
+    const comment = await Comment.findById(req.params.comment_id);
+    console.log(req.params.comment_id);
+    res.render('comments/edit', { comment, campground_id: req.params.id });
+  } catch (err) {
+    res.redirect('back');
+  }
+};
+
+// @desc      Update a comment
+// @route     PUT /campgrounds/:id/comments/:comment_id
+// @access    Private
+exports.updateComment = async (req, res) => {
+  const { comment } = req.body;
+  try {
+    await Comment.findByIdAndUpdate(req.params.comment_id, { comment });
+    console.log(req.body.comment);
+    res.redirect(`/campgrounds/${req.params.id}`);
+  } catch (err) {
+    res.redirect('back');
+  }
+};

@@ -6,10 +6,15 @@ const {
   createCampground,
   editCampground,
   updateCampground,
+  deleteCampground,
 } = require('../controllers/campgroundControllers');
-const { isLoggedIn } = require('../middleware/authMiddleware');
+const {
+  isLoggedIn,
+  checkCampgroundOwnership,
+} = require('../middleware/authMiddleware');
 
-const router = express.Router();
+// mergeParams is needed since campgroundControllers.js is requiring in two models, Campground and Comment
+const router = express.Router({ mergeParams: true });
 
 // /campgrounds
 router.route('/').get(getCampgrounds).post(isLoggedIn, createCampground);
@@ -18,8 +23,12 @@ router.route('/').get(getCampgrounds).post(isLoggedIn, createCampground);
 router.route('/new').get(isLoggedIn, showCreateCampground);
 
 // /campgrounds/:id
-router.route('/:id').get(getCampground).put(updateCampground);
+router
+  .route('/:id')
+  .get(getCampground)
+  .put(checkCampgroundOwnership, updateCampground)
+  .delete(checkCampgroundOwnership, deleteCampground);
 
-router.route('/:id/edit').get(editCampground);
+router.route('/:id/edit').get(checkCampgroundOwnership, editCampground);
 
 module.exports = router;
