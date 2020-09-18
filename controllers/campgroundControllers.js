@@ -109,7 +109,7 @@ exports.updateCampground = async (req, res) => {
 // @access    Private
 exports.deleteCampground = async (req, res) => {
   try {
-    const campground = await Campground.findByIdAndRemove(req.params.id);
+    await Campground.findByIdAndRemove(req.params.id);
     res.redirect('/campgrounds');
   } catch (err) {
     console.error(err.message);

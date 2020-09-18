@@ -47,26 +47,46 @@ exports.createComment = async (req, res) => {
 // @desc      Show the edit comment page
 // @route     GET /campgrounds/:id/comments/:comment_id/edit
 // @access    Private
-exports.showEditComment = async (req, res) => {
-  try {
-    const comment = await Comment.findById(req.params.comment_id);
-    console.log(req.params.comment_id);
-    res.render('comments/edit', { comment, campground_id: req.params.id });
-  } catch (err) {
-    res.redirect('back');
-  }
+exports.showEditComment = (req, res) => {
+  // find the right comment by id
+  Comment.findById(req.params.comment_id, function (err, foundComment) {
+    if (err) {
+      res.redirect('back');
+    } else {
+      // pass in :id and :comment_id
+      res.render('comments/edit', {
+        campground_id: req.params.id,
+        comment: foundComment,
+      });
+    }
+  });
 };
 
 // @desc      Update a comment
 // @route     PUT /campgrounds/:id/comments/:comment_id
 // @access    Private
 exports.updateComment = async (req, res) => {
-  const { comment } = req.body;
+  const { text } = req.body;
+  console.log(text);
   try {
-    await Comment.findByIdAndUpdate(req.params.comment_id, { comment });
-    console.log(req.body.comment);
+    await Comment.findByIdAndUpdate(req.params.comment_id, { text });
     res.redirect(`/campgrounds/${req.params.id}`);
   } catch (err) {
     res.redirect('back');
+  }
+};
+
+// @desc      Delete a comment
+// @route     DELETE /campgrounds/:id/comments/:comment_id
+// @access    Private
+exports.deleteComment = async (req, res) => {
+  //res.send('DELETE COMMENT ROUTE');
+  try {
+    await Comment.findByIdAndRemove(req.params.comment_id);
+    res.redirect(`/campgrounds/${req.params.id}`);
+  } catch (err) {
+    console.error(err.message);
+    //res.redirect('/campgrounds');
+    res.status(500).send('Server error');
   }
 };

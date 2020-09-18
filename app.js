@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
+const flash = require('connect-flash');
 const morgan = require('morgan');
 const session = require('express-session');
 const passport = require('passport');
@@ -23,6 +24,8 @@ const connectDB = async () => {
 };
 connectDB();
 
+app.set('view engine', 'ejs');
+
 app.use(
   session({
     secret: 'app secret',
@@ -30,8 +33,7 @@ app.use(
     saveUninitialized: false,
   })
 );
-
-app.set('view engine', 'ejs');
+app.use(flash());
 app.use(express.static(__dirname + '/public'));
 app.use(express.urlencoded({ extended: true })); // needed to get form data
 app.use(express.json()); // needed to get params from url
@@ -53,16 +55,19 @@ const authRoutes = require('./routes/authRoutes');
 const campgroundRoutes = require('./routes/campgroundRoutes');
 const commentRoutes = require('./routes/commentRoutes');
 
-// res.locals: make currentUser available throughout the app
+// res.locals: make currentUser, error and success available throughout the app
 app.use(function (req, res, next) {
   res.locals.currentUser = req.user;
+  res.locals.message = req.flash('error');
+  res.locals.success = req.flash('success');
   next();
 });
 
-// Routers
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.render('landing');
 });
+
+// Routers
 app.use('/auth', authRoutes);
 app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/comments', commentRoutes);

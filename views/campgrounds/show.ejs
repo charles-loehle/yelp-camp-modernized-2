@@ -20,17 +20,20 @@
           <p><em>Submitted by <%= campground.author.username %></em></p>
           <% if(currentUser && campground.author.id.equals(currentUser._id)) {
           %>
-          <a
-            class="btn btn-warning"
-            href="/campgrounds/<%= campground._id %>/edit"
-            >Edit Campground</a
-          >
-          <form
-            action="/campgrounds/<%= campground._id %>?_method=DELETE"
-            method="post"
-          >
-            <button class="btn btn-xs btn-danger">Delete</button>
-          </form>
+          <div class="campgrounds-delete-editButtons d-flex">
+            <a
+              class="btn btn-warning mr-1"
+              href="/campgrounds/<%= campground._id %>/edit"
+              >Edit Campground</a
+            >
+            <!-- DELETE /campgrounds/:id -->
+            <form
+              action="/campgrounds/<%= campground._id %>?_method=DELETE"
+              method="post"
+            >
+              <button class="btn btn-xs btn-danger">Delete</button>
+            </form>
+          </div>
           <% } %>
         </div>
       </div>
@@ -50,21 +53,24 @@
             <span class="pull-right">10 days ago</span>
             <p><%= comment.text %></p>
             <% if(currentUser && comment.author.id.equals(currentUser._id)) { %>
-            <a
-              href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/edit"
-              class="btn btn-xs btn-warning"
-              >Edit</a
-            >
-            <form
-              action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE"
-              method="post"
-            >
-              <input
-                class="btn btn-xs btn-danger"
-                type="submit"
-                value="Delete"
-              />
-            </form>
+            <div class="d-flex">
+              <a
+                href="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>/edit"
+                class="btn btn-xs btn-warning mr-1"
+                >Edit Comment</a
+              >
+              <!-- DELETE /campgrounds/:id/comments/:comment_id -->
+              <form
+                action="/campgrounds/<%= campground._id %>/comments/<%= comment._id %>?_method=DELETE"
+                method="post"
+              >
+                <input
+                  class="btn btn-xs btn-danger"
+                  type="submit"
+                  value="Delete Comment"
+                />
+              </form>
+            </div>
             <% } %>
           </div>
         </div>

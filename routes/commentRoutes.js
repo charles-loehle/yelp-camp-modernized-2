@@ -4,8 +4,12 @@ const {
   createComment,
   showEditComment,
   updateComment,
+  deleteComment,
 } = require('../controllers/commentControllers');
-const { isLoggedIn } = require('../middleware/authMiddleware');
+const {
+  isLoggedIn,
+  checkCommentOwnership,
+} = require('../middleware/authMiddleware');
 
 // mergeParams is needed since commentControllers.js is requiring in two models, Campground and Comment
 const router = express.Router({ mergeParams: true });
@@ -21,9 +25,12 @@ router.route('/new').get(isLoggedIn, showCreateComment);
 router.route('/').post(isLoggedIn, createComment);
 
 //  /campgrounds/:id/comments/:comment_id
-router.route('/:comment_id').put(updateComment);
+router
+  .route('/:comment_id')
+  .put(checkCommentOwnership, updateComment)
+  .delete(checkCommentOwnership, deleteComment);
 
 //  /campgrounds/:id/comments/:comment_id/edit
-router.route('/:comment_id/edit').get(showEditComment);
+router.route('/:comment_id/edit').get(checkCommentOwnership, showEditComment);
 
 module.exports = router;

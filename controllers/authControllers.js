@@ -16,10 +16,11 @@ exports.register = (req, res) => {
   // passport-local-mongoose method
   User.register(new User({ username }), password, (err, user) => {
     if (err) {
-      console.log(err);
+      req.flash('error', err.message);
       return res.render('auth/register');
     }
     passport.authenticate('local')(req, res, () => {
+      req.flash('success', 'Welcome to this app ' + user.username);
       res.redirect('/campgrounds');
     });
   });
@@ -29,13 +30,15 @@ exports.register = (req, res) => {
 // @route     GET /auth/login
 // @access    Public
 exports.showLogin = (req, res) => {
-  res.render('auth/login');
+  // console.log(req.flash('info', 'what'));
+  res.render('auth/login', { message: req.flash('error') });
 };
 
 // @desc      Login
 // @route     POST /auth/login
 // @access    Public
 exports.login = (req, res) => {
+  req.flash('success', 'You are successfully logged in');
   res.redirect('/campgrounds');
 };
 
@@ -45,5 +48,6 @@ exports.login = (req, res) => {
 exports.logout = (req, res) => {
   // passport method
   req.logout();
-  res.redirect('/');
+  req.flash('success', 'You are successfully logged out');
+  res.redirect('/campgrounds');
 };
