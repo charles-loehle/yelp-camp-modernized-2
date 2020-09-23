@@ -2,14 +2,15 @@
 <div class="container">
   <div class="row">
     <div class="col-md-6 mx-auto mt-5">
-      <h1 class="text-center">Sign Up!</h1>
-      <form action="/auth/register" method="POST">
+      <h1 class="text-center">Contact Us</h1>
+      <form action="/contact" method="POST">
         <div class="form-group">
           <input
             class="form-control"
             type="text"
-            name="username"
-            placeholder="username"
+            name="name"
+            placeholder="name"
+            required
           />
         </div>
         <div class="form-group">
@@ -18,18 +19,23 @@
             type="email"
             name="email"
             placeholder="email"
+            required
           />
         </div>
+
         <div class="form-group">
-          <input
+          <textarea
             class="form-control"
-            type="password"
-            name="password"
-            placeholder="password"
-          />
+            type="message"
+            name="message"
+            cols="30"
+            rows="10"
+            placeholder="message"
+            required
+          ></textarea>
         </div>
         <div class="form-group">
-          <button class="btn btn-lg btn-primary btn-block">Sign Up</button>
+          <button class="btn btn-lg btn-primary btn-block">Submit!</button>
         </div>
       </form>
       <a href="/campgrounds">Go Back</a>

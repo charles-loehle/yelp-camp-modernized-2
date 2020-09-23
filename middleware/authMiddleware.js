@@ -11,10 +11,7 @@ exports.isLoggedIn = (req, res, next) => {
 
 exports.checkCampgroundOwnership = (req, res, next) => {
   if (req.isAuthenticated()) {
-    // if authenticated
-    // find a campground
     Campground.findById(req.params.id, function (err, foundCampground) {
-      // if no campground found
       if (err) {
         req.flash('error', 'Campground not found');
         res.redirect('back');
@@ -28,7 +25,6 @@ exports.checkCampgroundOwnership = (req, res, next) => {
         }
       }
     });
-    // if not authenticated
   } else {
     req.flash('error', 'You need to be logged in to do that');
     res.redirect('back');

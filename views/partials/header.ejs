@@ -51,6 +51,9 @@
             >
           </li>
           <li class="nav-item active">
+            <a class="nav-link" href="/contact">Contact Us</a>
+          </li>
+          <li class="nav-item active">
             <a class="nav-link" href="/auth/logout">Logout</a>
           </li>
           <% } %>
@@ -58,9 +61,11 @@
       </div>
     </nav>
 
-    <div class="container">
-      <% if(success && success.length > 0){ %>
-      <div class="alert alert-success" role="alert"><%= success %></div>
+    <div class="container flash-messages">
+      <% if(error && error.length > 0) { %>
+      <div class="alert alert-danger"><p><%=error %></p></div>
+      <% } %> <% if(success && success.length > 0) { %>
+      <div class="alert alert-success"><p><%= success %></p></div>
       <% } %>
     </div>
   </body>

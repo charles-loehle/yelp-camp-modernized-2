@@ -6,6 +6,11 @@ const {
   register,
   login,
   logout,
+  verifyEmail,
+  forgotPassword,
+  forgotPasswordPage,
+  resetPassword,
+  resetPasswordPage,
 } = require('../controllers/authControllers');
 
 const router = express.Router();
@@ -19,7 +24,7 @@ router
   .get(showLogin)
   .post(
     passport.authenticate('local', {
-      //successRedirect: '/auth/secret',
+      successRedirect: '/',
       failureRedirect: '/auth/login',
     }),
     login
@@ -27,5 +32,14 @@ router
 
 //  /auth/logout
 router.route('/logout').get(logout);
+
+//  /auth/verify-email
+router.route('/verify-email').get(verifyEmail);
+
+//  /auth/forgotPassword
+router.route('/forgot').get(forgotPasswordPage).post(forgotPassword);
+
+//  /auth/reset/:token
+router.route('/reset/:token').get(resetPasswordPage).post(resetPassword);
 
 module.exports = router;

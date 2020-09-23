@@ -1,31 +1,33 @@
 <%- include('../partials/header') -%>
+
 <div class="container">
   <div class="row">
     <div class="col-md-6 mx-auto mt-5">
-      <h1 class="text-center">Login</h1>
-      <form action="/auth/login" method="POST">
-        <div class="form-group">
-          <input
-            class="form-control"
-            type="text"
-            name="username"
-            placeholder="username"
-          />
-        </div>
+      <h1 class="text-center">Reset Password</h1>
+      <form action="/auth/reset/<%= token %>" method="POST">
         <div class="form-group">
           <input
             class="form-control"
             type="password"
             name="password"
             placeholder="password"
+            autofocus
           />
         </div>
         <div class="form-group">
-          <button class="btn btn-lg btn-primary btn-block">Submit!</button>
+          <input
+            class="form-control"
+            type="password"
+            name="confirm"
+            placeholder="confirm password"
+          />
+        </div>
+        <div class="form-group">
+          <button class="btn btn-lg btn-primary btn-block">
+            Reset Password
+          </button>
         </div>
       </form>
-      <a class="d-block" href="/auth/forgot">Forgot your password?</a>
-      <a class="d-block" href="/campgrounds">Go Back</a>
     </div>
   </div>
 </div>
