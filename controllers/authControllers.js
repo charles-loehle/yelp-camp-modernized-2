@@ -36,8 +36,8 @@ exports.register = async (req, res) => {
       to: user.email,
       from: 'noreply@yelpcamp.com',
       subject: 'Yelpcamp email verification',
-      text: `email registration verification for ${req.body.username}`,
-      html: `<p>Click the link below to verify your account.</p>
+      html: `<p>Email registration verification for ${req.body.username}</p>
+      <p>Click the link below to verify your account.</p>
       <a href="http://${req.headers.host}/auth/verify-email?token=${user.emailToken}">Verify your account</a>`,
     };
 
@@ -208,5 +208,59 @@ exports.resetPasswordPage = (req, res) => {
 // @route     POST /auth/reset/:token
 // @access    Public
 exports.resetPassword = (req, res) => {
-  res.send('resetPassword');
+  async.waterfall(
+    [
+      // check if user's token matches token stored in the db and if it's not expired
+      function (done) {
+        User.findOne(
+          {
+            resetPasswordToken: req.params.token,
+            resetPasswordExpires: { $gt: Date.now() },
+          },
+          function (err, user) {
+            if (!user) {
+              req.flash('error', 'Password reset token is invalid or expired');
+              return res.redirect('back');
+            }
+            // check if form input passwords match then delete token, expiration and save the user
+            if (req.body.password === req.body.confirm) {
+              // passport-local-mongoose
+              user.setPassword(req.body.password, function (err) {
+                user.resetPasswordToken = undefined;
+                user.resetPasswordExpires = undefined;
+
+                user.save(function (err) {
+                  // passport.authenticate() exposes a req.login method
+                  req.login(user, function (err) {
+                    done(err, user);
+                  });
+                });
+              });
+            } else {
+              req.flash('error', 'Passwords do not match');
+              return res.redirect('back');
+            }
+          }
+        );
+      },
+      // send password reset confirmation email
+      function (user, done) {
+        const msg = {
+          to: user.email,
+          from: 'noreply@yelpcamp.com',
+          subject: 'Your Yelpcamp password has been changed',
+          html: `<p>Yelpcamp password has been changed for ${user.email}</p>`,
+        };
+
+        sgMail.send(msg, (err) => {
+          console.log('mail sent');
+          req.flash('success', 'Success! Your password has been changed.');
+          done(err);
+        });
+      },
+    ],
+    function (err) {
+      res.redirect('/campgrounds');
+    }
+  );
 };
