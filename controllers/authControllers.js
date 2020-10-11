@@ -102,9 +102,21 @@ exports.showLogin = (req, res) => {
 // @desc      Login
 // @route     POST /auth/login
 // @access    Public
-exports.login = (req, res) => {
-  req.flash('success', 'You are successfully logged in');
-  res.redirect('/campgrounds');
+exports.login = (req, res, next) => {
+  passport.authenticate('local', function (err, user, info) {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.redirect('/auth/login');
+    }
+    req.logIn(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+      return res.json({ user });
+    });
+  })(req, res, next);
 };
 
 // @desc      Logout

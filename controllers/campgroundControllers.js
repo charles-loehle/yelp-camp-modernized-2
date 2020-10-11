@@ -9,7 +9,12 @@ exports.getCampgrounds = async (req, res) => {
   // console.log(req.user);
   try {
     const campgrounds = await Campground.find();
-    res.render('campgrounds/index', {
+    // res.render('campgrounds/index', {
+    //   campgrounds,
+    //   currentUser: req.user,
+    // });
+
+    res.json({
       campgrounds,
       currentUser: req.user,
     });

@@ -6,6 +6,7 @@ const morgan = require('morgan');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
+const MongoStore = require('connect-mongo')(session);
 const methodOverride = require('method-override');
 const User = require('./models/user');
 const expressSanitizer = require('express-sanitizer');
@@ -33,6 +34,7 @@ app.use(
     secret: 'app secret',
     resave: false,
     saveUninitialized: false,
+    store: new MongoStore({ mongooseConnection: mongoose.connection }), // save sessions in the db
   })
 );
 app.use(flash());
@@ -77,7 +79,7 @@ app.use('/campgrounds', campgroundRoutes);
 app.use('/campgrounds/:id/comments', commentRoutes);
 app.use('/contact', contactRoutes);
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 const server = app.listen(
   PORT,

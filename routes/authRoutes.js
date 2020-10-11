@@ -19,16 +19,7 @@ const router = express.Router();
 router.route('/register').get(showRegister).post(register);
 
 //  /auth/login
-router
-  .route('/login')
-  .get(showLogin)
-  .post(
-    passport.authenticate('local', {
-      successRedirect: '/',
-      failureRedirect: '/auth/login',
-    }),
-    login
-  );
+router.route('/login').get(showLogin).post(login);
 
 //  /auth/logout
 router.route('/logout').get(logout);
