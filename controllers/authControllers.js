@@ -114,7 +114,7 @@ exports.login = (req, res, next) => {
       if (err) {
         return next(err);
       }
-      return res.json({ user });
+      return res.json({ _id: user.id, username: user.username });
     });
   })(req, res, next);
 };
